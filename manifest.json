@@ -1,5 +1,7 @@
 {
     "manifest_version": 2,
+    "author": "Marc Brillault",
+    "homepage_url": "https://github.com/MarcBrillault/easybnf-redirect",
     "name": "EasyBNF redirect",
     "version": "1.0.0",
     "description": "Redirige les liens vers les articles gérés par leur équivalent via le site de la BNF",
