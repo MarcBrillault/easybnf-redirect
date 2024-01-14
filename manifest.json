@@ -1,0 +1,20 @@
+{
+    "manifest_version": 2,
+    "name": "EasyBNF redirect",
+    "version": "1.0.0",
+    "description": "Redirige les liens vers les articles gérés par leur équivalent via le site de la BNF",
+    "icons": {
+        "48": "icon.png"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://www.mediapart.fr/*",
+                "https://www.arretsurimages.net/*"
+            ],
+            "js": [
+                "script.js"
+            ]
+        }
+    ]
+}
