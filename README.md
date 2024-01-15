@@ -9,15 +9,19 @@ la version hébergée par la BNF du site ciblé.
 
 C'est la première version du plugin, n'hésitez pas à me remonter tout souci rencontré.
 
+# Télécharger l'extension
+
+Vous pouvez trouver l'extension sur [le site d'add-ons de Firefox](https://addons.mozilla.org/fr/firefox/addon/easybnf-redirect/).
+
 # Que sur Firefox ?
 
 Effectivement, je n'ai pas développé le plugin pour d'autres navigateurs, et c'est une volonté consciente. Les navigateurs basés
 sur Chrome (c'est-à-dire absolument TOUS LES AUTRES navigateurs les plus communs) ne permettent plus de garantir un respect de
 la vie privée suffisant. Si vous utilisez n'importe lequel de ces navigateurs, je ne saurai que vous conseiller de migrer vers Firefox.
 
-# Le code est libre, je peux l'adapter pour Chrome et tu pourras rien y faire.
+# Disclaimer
 
-C'est vrai. Mais je m'y oppose.
+Ce plugin n'est affilié ni à la BNF, ni au site EasyBNF.
 
 # changelog
 
