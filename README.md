@@ -21,4 +21,5 @@ C'est vrai. Mais je m'y oppose.
 
 # changelog
 
+v1.0.1 : Suppression des paramètres d'URL, occasionant des soucis sur Mediapart
 v1.0.0 : création du plugin, gestion de Mediapart et Arrêt sur Images
