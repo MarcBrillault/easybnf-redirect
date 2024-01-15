@@ -10,6 +10,10 @@ let simpleRedirects = ["www.mediapart.fr", "www.arretsurimages.net"]
 let isSimpleRedirect = simpleRedirects.inArray(host)
 
 if (isSimpleRedirect) {
-    window.location.replace(redirectHost + window.location)
+    window.location.replace(redirectHost + removeQueryString(window.location.toString()))
+}
+
+function removeQueryString(url) {
+    return url.split('?')[0];
 }
 
