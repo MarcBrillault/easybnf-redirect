@@ -8,6 +8,9 @@
     "icons": {
         "48": "icon.png"
     },
+    "permissions": [
+      "tabs"
+    ],
     "content_scripts": [
         {
             "matches": [
