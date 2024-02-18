@@ -1,13 +1,3 @@
-Array.prototype.inArray = function (needle) {
-    return Array(this).join(",").indexOf(needle) > -1;
-}
-
-let redirectHost = "https://bnf.idm.oclc.org/login?url="
-let host = window.location.host;
-let path = window.location.pathname;
-
-//let simpleRedirects = ["www.mediapart.fr", "www.arretsurimages.net"]
-
 /*
     Previous method failed because autologin must occur before
     navigating to article.
@@ -18,7 +8,20 @@ let path = window.location.pathname;
 
     We must first autologin, and only then we can navigate
     to the article.
+    */
+
+let redirectHost = "https://bnf.idm.oclc.org/login?url=http://"
+
+/*
+
+This list of domains corresponds to domains that are part of the authentification process
+on the BNF side. There are back and forths between these domains while the client is getting
+logged in - this list is used so that we don't kill the listener inside our loginAndRedirect
+prematurely.
+
 */
+
+let listOfAuthHosts = ["bnf.idm.oclc.org", "login.bnf.idm.oclc.org", "idppub.bnf.fr", "authentification.bnf.fr"];
 
 let simpleRedirects = [{
     host: "www.mediapart.fr",
@@ -28,31 +31,60 @@ let simpleRedirects = [{
     autologin: "/autologin.php"
 }]
 
-let simpleRedirectHost = simpleRedirects.filter(element => element.host == host);
+browser.tabs.onUpdated.addListener(
+    (tab_id, changeInfo, tab) => { // we listen for all updates to our tab
+        if (changeInfo.url != undefined) { // if the current tab's its url was changed
+            let url = new URL(changeInfo.url); // we get the tab's url
+            let website = simpleRedirects.filter(element => element.host == url.host)[0]; // we see if the tab's url corresponds to the urls on our list
+            if (website != undefined) loginAndRedirect(website, url.pathname); // if that's the case we send it to our function
+        }
+    }
+);
 
-if (simpleRedirectHost.length == 1) {
-    //window.location.replace(redirectHost + simpleRedirectHost.host + simpleRedirectHost.autologin);
+function loginAndRedirect(srh, path){
+    let simpleRedirectHost = srh;
+    let loginUrl = redirectHost + simpleRedirectHost.host + simpleRedirectHost.autologin;
+    let originalPath = path;
 
-    // Now we need to navigate to the URL using the Tabs API (so that we can tell when the user has logged in)
-    browser.tabs.query({ currentWindow: true, active: true }).then((result)=>{ // We ask for the tab that is currently active in the window that is currently active
-        let current_tab_id = result[0].id; // We get its ID
-        browser.tabs.update(current_tab_id, {url: redirectHost + simpleRedirectHost.host + simpleRedirectHost.autologin}).then(()=>{ // We set the tab's url to the login page
-            let listener = (listener_tab_id, changeInfo)=> // we define a listener that is executed when an event is triggered in a tab
+    // Now we need to navigate to the URLS using the Tabs API (so that we can tell when the user has logged in)
+    browser.tabs.update( // We let the user login
+        {
+            url: loginUrl
+        }
+    ).then(
+        (current_tab) => {
+            let listener = (listener_tab_id, changeInfo, listener_tab) => // we define a listener that is executed when an event is triggered in our tab
+            {
+                if ((listener_tab_id == current_tab.id) && changeInfo.url != undefined) //if the change to the tab was its url (and if we're still in the same tab - you never know)
+                {
+                    if (!(urlPartOfAuthProcess(changeInfo.url)) && !(urlAutologin(changeInfo.url, simpleRedirectHost.autologin))) //if the tab's url is not part of the authentification process and is not the autologin page
+			// Note: that means that the URL host is the proxy domain to the news article (i.e www-mediapart-fr.bnf.idm.oclc.org) AND that the autologin has been done
                     {
-                        if ((listener_tab_id == current_tab_id) && changeInfo.url) //if the tab in which the event was triggered is the current tab and the change to the tab was its url
-                        {
-                            browser.tabs.onUpdated.removeListener(this); //we stop listening for updates
-                            browser.tabs.update(current_tab_id, {url: window.location.host + path}); //we redirect to the article
-                        }
+                        browser.tabs.onUpdated.removeListener(listener); //we stop listening for updates
+                        //console.log("NOT AUTH PROCESS: " + "https://" + new URL(changeInfo.url).host + originalPath);
+                        browser.tabs.update( // we redirect to the article
+                            {
+                                url: "https://" + new URL(changeInfo.url).host + originalPath
+                            }
+                        )
                     }
-            );
+                }
+            }
             browser.tabs.onUpdated.addListener(listener); //we start listening for updates to tabs
-        },(error)=>{console.log(error)}; 
-    }, (error)=>{console.log(error)}); 
+        },
+        error => console.log(error)
+    )
+} 
 
+function urlAutologin(url, pathname) // function that checks if the current URL goes to the autologin page
+{
+    let parsedUrl = new URL(url);
+    return parsedUrl.pathname == pathname;
 }
 
-function removeQueryString(url) {
-    return url.split('?')[0];
+function urlPartOfAuthProcess(url) // function that checks if the current URL is part of the urls in the auth process
+{
+    let parsedUrl = new URL(url);
+    //console.log(parsedUrl);
+    return listOfAuthHosts.includes(parsedUrl.hostname);
 }
-
