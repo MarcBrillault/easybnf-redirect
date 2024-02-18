@@ -9,17 +9,9 @@
         "48": "icon.png"
     },
     "permissions": [
-      "tabs"
+      "*://www.mediapart.fr/*", "*://www.arretsurimages.net/*", "*://*.bnf.idm.oclc.org/*", "*://bnf.idm.oclc.org/*", "*://idppub.bnf.fr/*", "*://authentification.bnf.fr/*", "activeTab"
     ],
-    "content_scripts": [
-        {
-            "matches": [
-                "https://www.mediapart.fr/*",
-                "https://www.arretsurimages.net/*"
-            ],
-            "js": [
-                "script.js"
-            ]
-        }
-    ]
+    "background": {
+	"scripts": ["script.js"]
+    }
 }
