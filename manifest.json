@@ -8,15 +8,10 @@
     "icons": {
         "48": "icon.png"
     },
-    "content_scripts": [
-        {
-            "matches": [
-                "https://www.mediapart.fr/*",
-                "https://www.arretsurimages.net/*"
-            ],
-            "js": [
-                "script.js"
-            ]
-        }
-    ]
+    "permissions": [
+      "*://www.mediapart.fr/*", "*://www.arretsurimages.net/*", "*://*.bnf.idm.oclc.org/*", "*://bnf.idm.oclc.org/*", "*://idppub.bnf.fr/*", "*://authentification.bnf.fr/*", "activeTab"
+    ],
+    "background": {
+	"scripts": ["script.js"]
+    }
 }
